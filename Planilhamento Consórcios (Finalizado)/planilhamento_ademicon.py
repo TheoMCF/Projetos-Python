@@ -1,19 +1,58 @@
 import pdfplumber
 import os
 import pandas as pd
-import sounddevice as sd
-import soundfile as sf
-
-def play_sound(filename):
-    data, samplerate = sf.read(filename)
-    sd.play(data, samplerate)
-    sd.wait()
 
 lista_paginas = []
 conta_corrente = []
 pendencia = []
 cabecalho_conta_corrente = []
 cabecalho_pendencia = []
+
+# Listas Conta Corrente
+lancamento = []
+cota = []
+aviso = []
+cod = []
+vencimento = []
+pagamento = []
+f_comum = []
+perc_f_comum = []
+f_reserva = []
+perc_f_reserva = []
+taxa_adm = []
+perc_taxa_adm = []
+seguros = []
+perc_seguros = []
+multa = []
+perc_multa = []
+juros = []
+perc_juros = []
+total = []
+perc_total = []
+
+# Listas Pendência
+ass = []
+aviso_pendencia = []
+historico = []
+vencto = []
+bem = []
+vl_credito = []
+vl_parcela = []
+multa_pendencia = []
+juros_pendencia = []
+vl_seguro = []
+perc_normal = []
+
+# Listas Contemplados
+num_contrato = []
+dt_contemplacao = []
+tipo_contemplacao = []
+credito = []
+cred_corrigido = []
+dt_pagamento = []
+entrega_documento = []
+valor_bem_entregue = []
+liquido_a_pagar = []
 
 for arquivo in os.listdir('Entrada'):
     if arquivo.endswith('.pdf'):
@@ -23,6 +62,59 @@ with pdfplumber.open(f"Entrada/{nome_arquivo}") as pdf:
     for pagina in pdf.pages:
         texto = pagina.extract_text()
         lista_paginas.append(texto.split('\n'))
+
+# Faz a extração dos dados de contemplados
+for pagina in lista_paginas:
+    num_contrato.append(pagina[3].split(' ')[-1])
+    for linha in pagina:
+        if 'Dt.contemplação' in linha:
+            linhas_infos = pagina[pagina.index(linha):pagina.index(linha)+2]
+            for index, linha in enumerate(linhas_infos):
+                linha = linha.split(' ')
+                if index == 0:
+                    dt_contemplacao.append(linha[0].split(':')[-1])
+                    credito.append(linha[2])
+                    if linha[linha.index('Pagamento:') + 1] != 'Valor':
+                        dt_pagamento.append(linha[linha.index('Pagamento:') + 1])
+                    else:
+                        dt_pagamento.append(' ')
+                    valor_bem_entregue.append(linha[linha.index('entregue:') + 1])
+                if index == 1:
+                    tipo_contemplacao.append(' '.join(linha[2:linha.index('Créd.')]))
+                    cred_corrigido.append(linha[linha.index('corrig.:') + 1])
+                    entrega_documento.append(linha[linha.index('docum.:') + 1])
+                    liquido_a_pagar.append(linha[linha.index('pagar:') + 1])
+
+for _ in range(len(num_contrato) - len(dt_contemplacao)):
+    dt_contemplacao.append(' ')
+    tipo_contemplacao.append(' ')
+    credito.append(' ')
+    cred_corrigido.append(' ')
+    dt_pagamento.append(' ')
+    entrega_documento.append(' ')
+    valor_bem_entregue.append(' ')
+    liquido_a_pagar.append(' ')
+    
+for pagina in lista_paginas:
+    for linha in pagina:
+        if 'Dt.contemplação' in linha:
+            num_contrato.append(pagina[3].split(' ')[-1])
+            linhas_infos = pagina[pagina.index(linha):pagina.index(linha)+2]
+            for index, linha in enumerate(linhas_infos):
+                linha = linha.split(' ')
+                if index == 0:
+                    dt_contemplacao.append(linha[0].split(':')[-1])
+                    credito.append(linha[2])
+                    if linha[linha.index('Pagamento:') + 1] != 'Valor':
+                        dt_pagamento.append(linha[linha.index('Pagamento:') + 1])
+                    else:
+                        dt_pagamento.append(' ')
+                    valor_bem_entregue.append(linha[linha.index('entregue:') + 1])
+                if index == 1:
+                    tipo_contemplacao.append(' '.join(linha[2:linha.index('Créd.')]))
+                    cred_corrigido.append(linha[linha.index('corrig.:') + 1])
+                    entrega_documento.append(linha[linha.index('docum.:') + 1])
+                    liquido_a_pagar.append(linha[linha.index('pagar:') + 1])
 
 # Pega as informações de cada página do PDF e separa em uma lista
 for i, pagina in enumerate(lista_paginas):
@@ -129,41 +221,27 @@ cabecalho_conta_corrente.insert(15, '%Multa')
 cabecalho_conta_corrente.insert(17, '%Juros')
 cabecalho_conta_corrente.insert(19, '%Total')
 
-# Listas Conta Corrente
-lancamento = []
-cota = []
-aviso = []
-cod = []
-vencimento = []
-pagamento = []
-f_comum = []
-perc_f_comum = []
-f_reserva = []
-perc_f_reserva = []
-taxa_adm = []
-perc_taxa_adm = []
-seguros = []
-perc_seguros = []
-multa = []
-perc_multa = []
-juros = []
-perc_juros = []
-total = []
-perc_total = []
-
-# Listas Pendência
-ass = []
-aviso_pendencia = []
-historico = []
-vencto = []
-bem = []
-vl_credito = []
-vl_parcela = []
-multa_pendencia = []
-juros_pendencia = []
-vl_seguro = []
-perc_normal = []
-
+for pagina in lista_paginas:
+    for linha in pagina:
+        if 'Dt.contemplação' in linha:
+            num_contrato.append(pagina[3].split(' ')[-1])
+            linhas_infos = pagina[pagina.index(linha):pagina.index(linha)+2]
+            for index, linha in enumerate(linhas_infos):
+                linha = linha.split(' ')
+                if index == 0:
+                    dt_contemplacao.append(linha[0].split(':')[-1])
+                    credito.append(linha[2])
+                    if linha[linha.index('Pagamento:') + 1] != 'Valor':
+                        dt_pagamento.append(linha[linha.index('Pagamento:') + 1])
+                    else:
+                        dt_pagamento.append(' ')
+                    valor_bem_entregue.append(linha[linha.index('entregue:') + 1])
+                if index == 1:
+                    tipo_contemplacao.append(' '.join(linha[2:linha.index('Créd.')]))
+                    cred_corrigido.append(linha[linha.index('corrig.:') + 1])
+                    entrega_documento.append(linha[linha.index('docum.:') + 1])
+                    liquido_a_pagar.append(linha[linha.index('pagar:') + 1])
+                    
 for linha in conta_corrente:
     # Verifica se a linha tem as informações normais ou dos percentuais
     if conta_corrente.index(linha) %2 == 0:
@@ -207,7 +285,7 @@ for linha in pendencia:
     vl_seguro.append(linha[9])
     perc_normal.append(linha[10])
 
-dados_df_conta_corrente = {
+df_conta_corrente =  pd.DataFrame({
     cabecalho_conta_corrente[0] : lancamento,
     cabecalho_conta_corrente[1] : cota,
     cabecalho_conta_corrente[2] : aviso,
@@ -228,9 +306,9 @@ dados_df_conta_corrente = {
     cabecalho_conta_corrente[17] : perc_juros,
     cabecalho_conta_corrente[18] : total,
     cabecalho_conta_corrente[19] : perc_total
-}
+})
 
-dados_df_pendencia = {
+df_pendencia = pd.DataFrame({
     cabecalho_pendencia[0]: ass,
     cabecalho_pendencia[1]: aviso_pendencia,
     cabecalho_pendencia[2]: historico,
@@ -242,11 +320,20 @@ dados_df_pendencia = {
     cabecalho_pendencia[8]: juros_pendencia,
     cabecalho_pendencia[9]: vl_seguro,
     cabecalho_pendencia[10]: perc_normal
-}
+})
 
-df_conta_corrente = pd.DataFrame(dados_df_conta_corrente)
-df_pendencia = pd.DataFrame(dados_df_pendencia)
+df_contemplados = pd.DataFrame({
+    'Número Contrato': num_contrato,
+    'Data Contemplação': dt_contemplacao,
+    'Tipo de Contemplação': tipo_contemplacao,
+    'Crédito': credito,
+    'Crédito Corrigido': cred_corrigido,
+    'Data Pagamento': dt_pagamento,
+    'Entrega de Documentos': entrega_documento,
+    'Valor Bem Entregue': valor_bem_entregue,
+    'Líquido a Pagar': liquido_a_pagar
+})
 
 df_conta_corrente.to_excel('Saída/CONSORCIOS CONTA CORRENTE.xlsx')
 df_pendencia.to_excel('Saída/CONSÓRCIOS PENDÊNCIA.xlsx')
-play_sound('Pokémon Healed.flac')
+df_contemplados.to_excel('Saída/CONSÓRCIOS CONTEMPLADOS.xlsx')
