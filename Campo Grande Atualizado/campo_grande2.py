@@ -8,7 +8,7 @@ import shutil
 class CAMPO_GRANDE:
     def __init__(self, sb) -> None:
 
-        self.url = 'https://nfse.pmcg.ms.gov.br/NotaFiscal/index.php'
+        self.url = 'https://nfse.campogrande.ms.gov.br/notafiscal/paginas/portal/index.html#/'
         self.user = getpass.getuser()
         self.download_dir = rf'C:\Users\{self.user}\Downloads'
 
@@ -20,6 +20,7 @@ class CAMPO_GRANDE:
         self.sb.cdp.sleep(5)
         self.sb.cdp.maximize()
     
+
     def acesso_sistema(self, cnpj, senha):
         print('Acessando o sistema')
         # acessar iframe da pagina principal

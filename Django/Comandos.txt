@@ -1,0 +1,21 @@
+django-admin startproject nome – cria um projeto
+
+python Django/manage.py startapp app – cria um app
+
+python Django/manage.py runserver – roda o servidor
+
+python Django/manage.py makemigrations – cria migrações
+
+python Django/manage.py migrate – aplica migrações
+
+python Django/manage.py createsuperuser – cria admin
+
+python Django/manage.py shell – shell interativo
+
+python Django/manage.py test – roda testes
+
+python Django/manage.py collectstatic – coleta arquivos estáticos
+
+python Django/manage.py showmigrations – lista migrações
+
+python Django/manage.py check – verifica problemas no projeto

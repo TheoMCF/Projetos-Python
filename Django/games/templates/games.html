@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>Games Info</title>
+    </head>
+    
+    {% block content %}
+        <body>
+            {% for games in games %}
+                <h3>{{ games.name }} - {{games.release_date}} - {{games.developer}} - {{games.genre}} <hr></h3>
+            {% endfor %}
+        </body>
+    {% endblock %}   
+        
+</html>
